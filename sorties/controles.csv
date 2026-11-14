@@ -1,0 +1,15 @@
+﻿etape;controle;valeur
+02_clean.sql;Nombre de lignes dans clean_fact_sinistre;12098
+chargement_meteo.py;Nombre de lignes dans meteo_assurrisk;21930
+chargement_meteo.py;Nombre de lignes dans villes_coordonnees_meteo;31
+04_rattachement.sql;Nombre de lignes dans meteo_assurrisk_ville;21930
+04_rattachement.sql;Nombre de villes rattachées;30
+05_croisement.sql;Nombre total de lignes dans fact_sinistre_meteo;12098
+05_croisement.sql;Sinistres avec météo;12098
+05_croisement.sql;Sinistres sans météo;0
+06_controles.sql;sinistres_propres;12098
+06_controles.sql;lignes_meteo;21930
+06_controles.sql;villes_meteo;30
+06_controles.sql;lignes_finales;12098
+06_controles.sql;sans_meteo;0
+06_controles.sql;meteo_en_double;0
