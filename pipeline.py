@@ -71,6 +71,19 @@ etapes_avant = [
 ]
 journal = []
 
+def enregistrer_journal():
+    """Sauvegarde immédiatement les étapes terminées."""
+    pd.DataFrame(
+        journal,
+        columns=colonnes_journal
+    ).to_csv(
+        "sorties/journal_pipeline.csv",
+        sep=";",
+        decimal=",",
+        index=False,
+        encoding="utf-8-sig"
+    )
+
 # Exécuter les étapes SQL préalables et mesurer la durée de chacune.
 for fichier, libelle in etapes_avant:
     debut = time.time()
@@ -80,6 +93,7 @@ for fichier, libelle in etapes_avant:
     print(" [SQL]", libelle)
     duree = round(time.time() - debut, 1)
     journal.append([fichier, libelle, "SQL", duree])
+    enregistrer_journal()
 
     # Après le nettoyage, vérification du volume de la table des sinistres propres.
     if fichier == "02_clean.sql":
@@ -130,6 +144,7 @@ print(" [PYTHON]", len(villes), "lignes de coordonnées chargées")
 # Ajouter le chargement Python au journal avec sa durée.
 journal.append(["chargement_meteo.py", "Charger les données météo et villes", "Python",
                 round(time.time() - debut, 1)])
+enregistrer_journal()
 
 # Vérification et enregistrement du nombre de lignes réellement présentes dans chaque
 # table après le chargement.
@@ -167,6 +182,7 @@ for fichier, libelle in etapes_apres:
     curseur.execute(requete)
     duree = round(time.time() - debut, 1)
     journal.append([fichier, libelle, "SQL", duree])
+    enregistrer_journal()
     print(" [SQL]", libelle, "-", duree, "s")
 
     # Contrôle le volume météo rattaché et le nombre de villes correspondantes.

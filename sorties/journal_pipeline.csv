@@ -1,8 +1,8 @@
 ﻿fichier;etape;outil;secondes
-01_init.sql;Reinitialiser la base;SQL;114,6
-02_clean.sql;Construire la couche propre;SQL;26,6
-03_tables_meteo.sql;Creer les tables qui attendent la meteo;SQL;0,1
-chargement_meteo.py;Charger les données météo et villes;Python;0,3
-04_rattachement.sql;Rattacher la météo aux sinistres;SQL;0,2
-05_croisement.sql;Croiser les sinistres et la météo;SQL;0,3
-06_controles.sql;Contrôler le résultat;SQL;0,1
+01_init.sql;Reinitialiser la base;SQL;61,5
+02_clean.sql;Construire la couche propre;SQL;14,9
+03_tables_meteo.sql;Creer les tables qui attendent la meteo;SQL;0,0
+chargement_meteo.py;Charger les données météo et villes;Python;0,2
+04_rattachement.sql;Rattacher la météo aux sinistres;SQL;0,1
+05_croisement.sql;Croiser les sinistres et la météo;SQL;0,1
+06_controles.sql;Contrôler le résultat;SQL;0,0

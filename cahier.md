@@ -249,17 +249,31 @@ drop table if exist en SQL
 
 # Exercice 3 — Cassez une étape exprès:
 ## Trois questions : 
+
+Pour provoquer volontairement l’échec à l’étape 03, le script cherche actuellement le bon fichier, 03_tables_meteo.sql. Alors que je viens de le modifier temporairement cette ligne dans etapes_avant :
+("03_table_meteo.sql", "Creer les tables qui attendent la meteo"),
+
+le nom erroné fait échouer l'ouverture du fichier. Il faut noter, qu'avant cette eerur,
+01_init.sql réinitialisera la base et 02_clean.sql s’exécutera.
+
 1. À quel moment le pipeline s’arrête-t-il ?
-  Le journal_pipeline.csv ne contient que ses en-têtes : aucune étape n’y a été enregistrée. Le script écrit le journal seulement à la fin; il s’est donc probablement arrêté avant cette écriture. Le fichier seul ne permet pas de savoir à quelle ligne. Il faut regarder le traceback affiché dans le terminal pour trouver l’erreur et l’étape concernée.
-  Ainsi, on note à la ligne 77  une erreur de type FileNotFoundError: [Errno 2] No such file or directory: 'sql/01_ini.sql'
+
+Le pipeline s’arrête à l’ouverture du fichier de l’étape 03 avec une erreur FileNotFoundError au niveau de la ligne 90 
+  
 
 2. Le journal permet-il de savoir quelle étape a échoué ? 
-  Non. Il est vide parce qu’il n’est sauvegardé qu’à la fin. Les messages [SQL] affichés avant l’erreur dans le terminal peuvent toutefois montrer jusqu’où le script est allé.
-
+ 
+ Le journal conserve les étapes réussies — 01_init.sql et 02_clean.sql — mais ne contient pas l’étape 03, car elle n’a pas abouti.
+|-------------------------------------------------------------------------|
+| Fichier        | Étape                       | Outil | Durée (secondes) |
+|----------------|-----------------------------|-------|------------------|
+| `01_init.sql`  | Réinitialiser la base       | SQL   | 114,1            |
+| `02_clean.sql` | Construire la couche propre | SQL   | 25,9             |
+|-------------------------------------------------------------------------|
 
 3. Les étapes précédentes, elles, ont-elles été faites ? Donc dans quel état est la base ?
-   Peut-être. Le script active connexion.autocommit = True, donc les commandes terminées avant l’erreur peuvent déjà être enregistrées dans la base. Comme 01_ini.sql réinitialise des tables, la base peut être dans un état partiel : certaines étapes faites, les suivantes non. Ne relance pas le pipeline avant d’avoir relevé le traceback; une nouvelle exécution pourrait réinitialiser encore la base.
-
+  
+Les étapes 01 et 02 ont été appliquées (autocommit = True); l’étape 03 et les suivantes ne l’ont pas été. La base est donc dans un état partiel : initialisée et nettoyée, mais sans les tables météo créées par l’étape 03.
 
 
  # ======================================================================================================

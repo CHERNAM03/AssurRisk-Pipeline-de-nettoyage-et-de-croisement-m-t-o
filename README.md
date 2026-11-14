@@ -35,8 +35,8 @@ base. Le mot de passe est demandé au lancement et n'est pas affiché.
 
 ## Lancer le pipeline
 
-Dans PowerShell, placez-vous à la racine du dossier du projet — le dossier qui
-contient `pipeline.py` — puis lancez :
+Dans PowerShell, on se placez à la racine du dossier du projet — le dossier qui
+contient `pipeline.py` — puis lance :
 
 ```powershell
 python pipeline.py
@@ -57,10 +57,10 @@ dans cet ordre :
 
 `01_ini.sql` supprime puis recrée les tables sources et réinitialise leurs
 données. Chaque exécution complète du pipeline reconstruit donc les tables et
-peut remplacer les données présentes dans `AssurRisk1`. Vérifiez la base ciblée
-avant de lancer le script.
+peut remplacer les données présentes dans `AssurRisk1`. Vérification de la base ciblée
+avant le lancement du script.
 
-La base elle-même doit déjà exister. Si elle n'existe pas, créez `AssurRisk1`
+La base elle-même existe déjà. Si elle n'existe pas, j'allais la créer `AssurRisk1`
 dans PostgreSQL avant de lancer le pipeline.
 
 ## Résultats et vérifications
@@ -81,8 +81,4 @@ contrôles précédents ont affiché 12 098 sinistres nettoyés et finaux,
 La version actuelle utilise le fichier JSON météo déjà présent dans
 `donnees/`. Elle ne fait pas elle-même de requête à l'API météo.
 
-## GitHub
 
-Avant de publier le projet, vérifiez que les fichiers ne contiennent aucun mot
-de passe, jeton ou autre secret. Le mot de passe PostgreSQL doit rester privé;
-ne le placez jamais dans le dépôt.
