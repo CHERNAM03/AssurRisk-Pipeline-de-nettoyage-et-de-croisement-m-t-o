@@ -1,3 +1,7 @@
+
+# Pipeline Python et PostgreSQL qui initialise et nettoie les données d’assurance, charge les données météo 
+# et les coordonnées des villes, puis les rattache aux sinistres et contrôle les résultats.
+
 # Bibliothèques utilisées : connexion PostgreSQL, lecture/écriture des données,
 # chronométrage des étapes et gestion des fichiers de sortie.
 import psycopg2
