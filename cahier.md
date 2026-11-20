@@ -289,3 +289,65 @@ chargement_meteo.py;Charger les données météo et villes;Python;0,3
 06_controles.sql;Contrôler le résultat;SQL;0,1
 
 La ligne de comparaison peut être : « Les deux lancements ont les mêmes étapes et les mêmes résultats de contrôle; les durées peuvent varier. » Les contrôles actuellement enregistrés sont 12 098 sinistres propres et finaux, 21 930 lignes météo, 30 villes rattachées, 0 sinistre sans météo et 0 doublon météo. Pour affirmer que ces résultats sont identiques sur les deux lancements, il faudra comparer aussi le second fichier controles.csv.
+
+
+
+
+# Franchise : 
+
+La franchise moyenne est d’environ 228,70 €, et la médiane est de 200 € ; elle semble souvent suivre un barème fixe.
+
+# MA CONCLUSION, ET MA CONFIANCE │
+
+confirmée  
+
+
+# À noter dans le cahier avant de partir
+
+## 1. Ma case 5 de l’enquête sur octobre
+
+Les données confirment qu’octobre 2025 est un mois exceptionnellement chargé en sinistres et que les dégâts des eaux y occupent une part plus importante que le reste de la période. Cela rend mon hypothèse plausible, mais ne prouve pas que les fortes pluies ont causé le pic. Pour la vérifier, il faudrait comparer, pour chaque ville et chaque jour, les dégâts des eaux lors des journées très pluvieuses avec ceux des journées peu ou pas pluvieuses. Ma confiance dans le constat du pic est élevée; ma confiance dans son explication par la pluie reste limitée.
+
+## 2. La phrase de la case 3 qui m’a le plus servi
+
+« Si mon explication est vraie, je devrais voir beaucoup de sinistres liés aux dégâts des eaux concentrés à quelques dates ou dans certaines villes. »
+
+Cette phrase m’a servi parce qu’elle transforme mon idée en un résultat que je peux chercher dans les données : vérifier si les dégâts des eaux se concentrent réellement à certaines dates ou dans certaines villes.
+
+## 3. Une chose que je n’ai pas comprise aujourd’hui
+
+Exemple à garder seulement s’il correspond à ce que je ressens : « Je ne sais pas encore comment comparer les dégâts des eaux des jours très pluvieux à ceux des jours peu ou pas pluvieux, ville par ville. »
+
+
+# EXERCICE 2 du jeudi
+
+Qu’est-ce qui change d’un appel à l’autre ?
+Les valeurs enregistrées : le nom du fichier, le libellé de l’étape, l’outil utilisé ("SQL" ou "Python") et la durée. Ce sont les paramètres de la fonction :
+
+def journaliser_etape(fichier, libelle, outil, duree):
+
+Par exemple, l’appel depuis jouer_sql() fournit "SQL", tandis que celui depuis charger_table() fournit "Python"
+
+Qu’est-ce qui reste identique ?
+La structure de la ligne ajoutée au journal :
+
+journal.append([fichier, libelle, outil, duree])
+
+C’est le corps de la fonction : il construit une liste avec ces quatre valeurs et l’ajoute à journal.
+
+## Comment savoir que c'est juste ?
+
+- 1. Déja avec un ctrl + F , je me retrouve avec un journal.append au lieu de trois
+- 2. Effectivement, les six contrôles sont identiques à ceux de l’exercice 1.
+
+ contrôle final : sinistres_propres = 12098
+ contrôle final : lignes_meteo = 21930
+ contrôle final : villes_meteo = 30
+ contrôle final : lignes_finales = 12098
+ contrôle final : sans_meteo = 0
+ contrôle final : meteo_en_double = 0
+
+- 3. Ouvrez sorties/journal_pipeline.csv . La durée de 01_init.sql doit être de plus
+de 20 secondes.
+ j'ai cela comme resultats : 01_init.sql;Reinitialiser la base;SQL;58,2
+

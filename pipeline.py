@@ -43,6 +43,44 @@ connexion.autocommit = True
 curseur = connexion.cursor()
 print("connexion ouverte")
 
+
+def journaliser_etape(fichier, libelle, outil, duree):
+    journal.append([fichier, libelle, outil, duree])
+
+
+def jouer_sql(fichier, libelle):
+    debut = time.time()
+    with open("sql/" + fichier, encoding="utf-8") as fichier_sql:
+        requete = fichier_sql.read()
+    curseur.execute(requete)
+
+    duree = round(time.time() - debut, 1)
+    print(" [SQL]", libelle, "-", duree, "s")
+    journaliser_etape(fichier, libelle, "SQL", duree)
+
+    if fichier == "02_clean.sql":
+        curseur.execute("SELECT COUNT(*) FROM clean_fact_sinistre")
+        nombre_sinistres = curseur.fetchone()[0]
+        print(" contrôle : clean_fact_sinistre =", nombre_sinistres, "lignes")
+        controles.append([
+            fichier,
+            "Nombre de lignes dans clean_fact_sinistre",
+            nombre_sinistres
+        ])
+
+
+def charger_table(tableau, requete_copy, libelle):
+    debut = time.time()
+    tampon = io.StringIO()
+    tableau.to_csv(tampon, index=False, header=False)
+    tampon.seek(0)
+    curseur.copy_expert(requete_copy, tampon)
+
+    duree = round(time.time() - debut, 1)
+    print(" [PYTHON]", len(tableau), "lignes chargées :", libelle)
+    journaliser_etape("chargement_meteo.py", libelle, "Python", duree)
+
+
 # Lecture de la réponse météo JSON déjà téléchargée et affiche quelques informations
 # pour vérifier sa structure avant de la transformer.
 meteo_brute = json.load(open("donnees/meteo_30_villes.json", encoding="utf-8"))
@@ -73,41 +111,21 @@ journal = []
 
 # Exécuter les étapes SQL préalables et mesurer la durée de chacune.
 for fichier, libelle in etapes_avant:
-    debut = time.time()
-    with open("sql/" + fichier, encoding="utf-8") as fichier_sql:
-        requete = fichier_sql.read()
-    curseur.execute(requete)
-    print(" [SQL]", libelle)
-    duree = round(time.time() - debut, 1)
-    journal.append([fichier, libelle, "SQL", duree])
-
-    # Après le nettoyage, vérification du volume de la table des sinistres propres.
-    if fichier == "02_clean.sql":
-        curseur.execute("SELECT COUNT(*) FROM clean_fact_sinistre")
-        nombre_sinistres = curseur.fetchone()[0]
-        print(" contrôle : clean_fact_sinistre =", nombre_sinistres, "lignes")
-        controles.append([
-            fichier,
-            "Nombre de lignes dans clean_fact_sinistre",
-            nombre_sinistres
-        ])
+    jouer_sql(fichier, libelle)
 
 # Chargement en bloc des données météo en mémoire dans PostgreSQL.
 # Cette étape doit suivre la création des tables et précéder le rattachement.
-debut = time.time()
-tampon = io.StringIO()
-meteo.to_csv(tampon, index=False, header=False)
-tampon.seek(0)
-curseur.copy_expert(
-    """
-    COPY meteo_assurrisk (
-        time, weather_code, temperature_2m_max, temperature_2m_min,
-        precipitation_sum, wind_gusts_10m_max, latitude, longitude
-    ) FROM STDIN WITH (FORMAT csv)
-    """,
-    tampon
+requete_meteo = """
+COPY meteo_assurrisk (
+    time, weather_code, temperature_2m_max, temperature_2m_min,
+    precipitation_sum, wind_gusts_10m_max, latitude, longitude
+) FROM STDIN WITH (FORMAT csv)
+"""
+charger_table(
+    meteo,
+    requete_meteo,
+    "Charger les données météo"
 )
-print(" [PYTHON]", len(meteo), "lignes de météo chargées")
 
 # Lecture du fichier  CSV de coordonnées, le convertir en flux CSV en mémoire,
 # puis chargement des lignes dans la table PostgreSQL correspondante.
@@ -115,21 +133,15 @@ villes = pd.read_csv(
     "donnees/villes_coordonnees_meteo.csv",
     encoding="utf-8-sig"
 )
-tampon_villes = io.StringIO()
-villes.to_csv(tampon_villes, index=False, header=False)
-tampon_villes.seek(0)
-curseur.copy_expert(
-    """
-    COPY villes_coordonnees_meteo (ville, latitude, longitude)
-    FROM STDIN WITH (FORMAT csv)
-    """,
-    tampon_villes
+requete_villes = """
+COPY villes_coordonnees_meteo (ville, latitude, longitude)
+FROM STDIN WITH (FORMAT csv)
+"""
+charger_table(
+    villes,
+    requete_villes,
+    "Charger les coordonnées des villes"
 )
-print(" [PYTHON]", len(villes), "lignes de coordonnées chargées")
-
-# Ajouter le chargement Python au journal avec sa durée.
-journal.append(["chargement_meteo.py", "Charger les données météo et villes", "Python",
-                round(time.time() - debut, 1)])
 
 # Vérification et enregistrement du nombre de lignes réellement présentes dans chaque
 # table après le chargement.
@@ -161,13 +173,7 @@ etapes_apres = [
 
 # Exécuter les traitements SQL finaux et ajout de leur durée au journal.
 for fichier, libelle in etapes_apres:
-    debut = time.time()
-    with open("sql/" + fichier, encoding="utf-8") as fichier_sql:
-        requete = fichier_sql.read()
-    curseur.execute(requete)
-    duree = round(time.time() - debut, 1)
-    journal.append([fichier, libelle, "SQL", duree])
-    print(" [SQL]", libelle, "-", duree, "s")
+    jouer_sql(fichier, libelle)
 
     # Contrôle le volume météo rattaché et le nombre de villes correspondantes.
     if fichier == "04_rattachement.sql":
