@@ -5,6 +5,7 @@
 # Bibliothèques utilisées : connexion PostgreSQL, lecture/écriture des données,
 # chronométrage des étapes et gestion des fichiers de sortie.
 import psycopg2
+from psycopg2 import sql
 from getpass import getpass
 import json
 import pandas as pd
@@ -49,7 +50,13 @@ print("connexion ouverte")
 
 
 def journaliser_etape(fichier, libelle, outil, duree):
-    journal.append([fichier, libelle, outil, duree])
+    journal.append([fichier, libelle, outil, duree, "ok"])
+
+
+def compter_lignes(nom_table):
+    requete = sql.SQL("SELECT COUNT(*) FROM {}").format(sql.Identifier(nom_table))
+    curseur.execute(requete)
+    return curseur.fetchone()[0]
 
 
 def jouer_sql(fichier, libelle):
@@ -228,7 +235,7 @@ for fichier, libelle in etapes_apres:
             controles.append([fichier, nom, valeur])
 
 # Rédiger le journal des durées et l'ensemble des contrôles dans le dossier sorties.
-suivi = pd.DataFrame(journal, columns=["fichier", "etape", "outil", "secondes"])
+suivi = pd.DataFrame(journal, columns=["fichier", "etape", "outil", "secondes", "statut"])
 suivi.to_csv("sorties/journal_pipeline.csv", sep=";", decimal=",", index=False, encoding="utf-8-sig")
 pd.DataFrame(controles, columns=colonnes_controles).to_csv(
     "sorties/controles.csv",

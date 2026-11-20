@@ -388,9 +388,11 @@ Git me dit que cahier.md a été modifié, mais pas ajouté à la zone de prépa
 Pour ne committer que ce fichier :
 git add .\cahier.md
 git commit -m "Mise à jour du cahier"
+J’ai nommé ma troisième fonction `compter_lignes`, car elle renvoie le nombre de lignes d’une table.
+L’erreur « nothing to commit » venait du fait que j’avais oublié `git add` avant `git commit`.
+Je ne comprends pas encore pourquoi `psycopg2.sql.Identifier` est préférable à la concaténation du nom de table dans la requête.
 
 
 # EXERCICE 3 du VENDREDI
 
 J’ai modifié pipeline.py pour le casser volontairement : plusieurs lignes ont été altérées ou supprimées. Je ne l’ai pas exécuté. Pour annuler ces changements et récupérer la version du dernier commit, lance git restore -- pipeline.py.
-
