@@ -351,3 +351,46 @@ C’est le corps de la fonction : il construit une liste avec ces quatre valeurs
 de 20 secondes.
  j'ai cela comme resultats : 01_init.sql;Reinitialiser la base;SQL;58,2
 
+
+
+# Exercice 2 du vendredi
+
+Sortie du git log online.....
+   f7adaf0..17adabe  update -> update
+(.venv) PS C:\Users\Utilisateur\Downloads\demarrage> git log --oneline
+17adabe (HEAD -> update, origin/update) Creation du fichier LISEZMOI.md
+4b062d2 Ajout La ligne affichera le nombre de lignes et de colonnes chargées
+8e313e6 Description de pipeline.py
+f7adaf0 Supprime le script de sauvegarde
+a297e05 Isolation de l'environnement virtuel
+d224bea modification du fichier  gitignore
+dcc6af2 test
+5abeb02 inclure le git ignore
+e136b76 mise à jour de mon dossier demarragge
+8f99204 (origin/nouvelle-feature, origin/documentation-pipeline, nouvelle-feature, main, documentation-pipeline) Premier commit de mon projet pipeline
+
+# BONUS DE L'EXERCICE 
+message
+
+(.venv) PS C:\Users\Utilisateur\Downloads\demarrage> git commit -m "Mise à jour du cahier"           
+On branch update
+Your branch is up to date with 'origin/update'.
+
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+        modified:   cahier.md
+
+no changes added to commit (use "git add" and/or "git commit -a")
+
+Git me dit que cahier.md a été modifié, mais pas ajouté à la zone de préparation. Le commit n’a donc rien enregistré.
+
+Pour ne committer que ce fichier :
+git add .\cahier.md
+git commit -m "Mise à jour du cahier"
+
+
+# EXERCICE 3 du VENDREDI
+
+J’ai modifié pipeline.py pour le casser volontairement : plusieurs lignes ont été altérées ou supprimées. Je ne l’ai pas exécuté. Pour annuler ces changements et récupérer la version du dernier commit, lance git restore -- pipeline.py.
+
