@@ -61,4 +61,3 @@ Une corrélation mesure une association entre deux variables; elle ne prouve pas
 2. **Précipitations et nombre de dégâts des eaux** par ville et par jour d’octobre. C’est le test le plus directement lié à l’hypothèse de fortes pluies.
 3. **Rafales maximales et nombre de sinistres Tempête** par ville et par jour d’octobre. Cela examine une autre association météo-sinistre pertinente.
 
-Pour les calculer correctement, il faut partir de toutes les observations météo des 30 villes pour les 28 jours, puis ajouter les nombres de sinistres par ville-date. Les couples sans sinistre doivent recevoir un compte de zéro. Calculer une corrélation uniquement sur les lignes de sinistres exclurait ces zéros et pourrait fausser l’interprétation. Les noms des variables et la période doivent être vérifiés avant le calcul; aucune valeur de corrélation n’est inventée ici.
