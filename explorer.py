@@ -1,4 +1,4 @@
-import pandas as pd
+import panda s as pd
 import psycopg2
 import warnings
 import getpass
@@ -10,7 +10,7 @@ pd.set_option("display.max_columns", 30)
 mot_de_passe = getpass.getpass("Mot de passe PostgreSQL : ")
 connexion = psycopg2.connect(host="localhost", port=5432, dbname="AssurRisk1",
  user="postgres", password=mot_de_passe)
-df = pd.read_sql("SELECT * FROM fact_sinistre_meteo", connexion)
+df = pd.read_sql("SELECT * FROM fact_sinistre_meteo, connexion)
 print("Données chargées :", df.shape)
 df["montant_estime"] = df["montant_estime"].astype(float)
 df["franchise"] = df["franchise"].astype(float)
@@ -272,4 +272,3 @@ statuts_par_type = pd.crosstab(
 print(statuts_par_type.to_string())
 
 connexion.close()
-
