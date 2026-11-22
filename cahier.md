@@ -396,3 +396,10 @@ Je ne comprends pas encore pourquoi `psycopg2.sql.Identifier` est préférable �
 # EXERCICE 3 du VENDREDI
 
 J’ai modifié pipeline.py pour le casser volontairement : plusieurs lignes ont été altérées ou supprimées. Je ne l’ai pas exécuté. Pour annuler ces changements et récupérer la version du dernier commit, lance git restore -- pipeline.py.
+
+# À noter dans le cahier avant de partir
+
+Aujourd’hui, j’ai appris à versionner mes dossiers avec Git, à créer des commits et à consulter l’historique de mon travail.
+Ce qui reste flou : utiliser `git restore` quand le fichier restauré génère un journal CSV à son exécution; je veux comprendre ce que Git restaure et ce qui se régénère ensuite.
+
+J'ai compris comment git fonctionne et comment suivrfe l'historique de nos projets
