@@ -1,4 +1,4 @@
-import panda s as pd
+import pandas as pd
 import psycopg2
 import warnings
 import getpass
@@ -10,7 +10,7 @@ pd.set_option("display.max_columns", 30)
 mot_de_passe = getpass.getpass("Mot de passe PostgreSQL : ")
 connexion = psycopg2.connect(host="localhost", port=5432, dbname="AssurRisk1",
  user="postgres", password=mot_de_passe)
-df = pd.read_sql("SELECT * FROM fact_sinistre_meteo, connexion)
+df = pd.read_sql("SELECT * FROM fact_sinistre_meteo", connexion)
 print("Données chargées :", df.shape)
 df["montant_estime"] = df["montant_estime"].astype(float)
 df["franchise"] = df["franchise"].astype(float)
@@ -215,6 +215,36 @@ par_ville_date = octobre.groupby(
 )
 print("\nCouples ville-date d'octobre triés par précipitations :")
 print(par_ville_date.sort_values("pluie_mm", ascending=False).to_string())
+
+# Calcul des coeifficients de corrélations
+
+# Compter les sinistres par ville et par jour
+comptes = octobre.groupby(["date_survenance", "ville_sinistre"]).agg(
+    total=("sinistre_id", "count"),
+    eaux=("type_sinistre", lambda s: (s == "Dégât des eaux").sum()),
+    tempetes=("type_sinistre", lambda s: (s == "Tempête").sum())
+).reset_index()
+
+# Récupérer la météo d'octobre
+meteo = pd.read_sql_query("""
+    SELECT time, ville, precipitation_sum, wind_gusts_10m_max
+    FROM meteo_assurrisk_ville
+    WHERE time >= '2025-10-01' AND time < '2025-10-29'
+""", connexion)
+meteo["time"] = pd.to_datetime(meteo["time"])
+
+# Associer météo et nombres de sinistres; les jours sans sinistre comptent comme zéro
+corr = meteo.merge(
+    comptes,
+    left_on=["time", "ville"],
+    right_on=["date_survenance", "ville_sinistre"],
+    how="left"
+)
+corr[["total", "eaux", "tempetes"]] = corr[["total", "eaux", "tempetes"]].fillna(0)
+
+print(corr["precipitation_sum"].corr(corr["total"]))
+print(corr["precipitation_sum"].corr(corr["eaux"]))
+print(corr["wind_gusts_10m_max"].corr(corr["tempetes"]))
 
 
 # EXERCICE 2
