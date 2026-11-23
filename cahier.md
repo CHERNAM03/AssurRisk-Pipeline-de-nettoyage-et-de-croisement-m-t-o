@@ -63,14 +63,14 @@ Le pipeline a réinitialisé la base, lu 30 villes et construit un tableau mét�
 
 Lors d’un lancement, la réinitialisation de la base était l’étape la plus longue :
 
-| Fichier | Étape | Outil | Durée (s) |
-|---|---|---|---:|
-| `01_init.sql` | Réinitialiser la base | SQL | 156,8 |
-| `02_clean.sql` | Construire la couche propre | SQL | 36,1 |
-| `03_tables_meteo.sql` | Créer les tables météo | SQL | 0,0 |
-| `04_rattachement.sql` | Rattacher la météo aux sinistres | SQL | 0,0 |
-| `05_croisement.sql` | Croiser les sinistres et la météo | SQL | 0,1 |
-| `06_controles.sql` | Contrôler le résultat | SQL | 0,0 |
+| Fichier               | Étape                              | Outil | Durée (s) |
+|-----------------------|------------------------------------|-------|-----------|
+| `01_init.sql`         | Réinitialiser la base              | SQL   | 156,8     |
+| `02_clean.sql`        | Construire la couche propre        | SQL   | 36,1      |
+| `03_tables_meteo.sql` | Créer les tables météo             | SQL   | 0,0       |
+| `04_rattachement.sql` | Rattacher la météo aux sinistres   | SQL   | 0,0       |
+| `05_croisement.sql`   | Croiser les sinistres et la météo  | SQL   | 0,1       |
+| `06_controles.sql`    | Contrôler le résultat              | SQL   | 0,0       |
 
 ### Exercice 5 — Contrôler après chaque étape
 
@@ -84,18 +84,18 @@ Le résultat est conforme aux attentes. Le nettoyage exclut notamment les doublo
 
 Je vérifierais d’abord `02_clean.sql`, notamment ses filtres `WHERE`, la suppression des doublons (`DISTINCT` ou `ROW_NUMBER`) et les jointures. Une mauvaise jointure peut multiplier les lignes ou en éliminer. Je vérifierais ensuite les données sources et leur chargement par `01_init.sql`.
 
-#### Que ne dit pas un contrôle placé uniquement à la fin ?
+#### Que ne dit pas un contrôle pl  acé uniquement à la fin ?
 
 Un contrôle final peut signaler une anomalie sans localiser son origine ni préciser la règle de gestion qui a échoué. Les contrôles intermédiaires permettent de circonscrire le problème à une étape.
 
 #### Mise en commun — types de contrôles
 
-| Type de contrôle | Moment d’utilisation | Anomalie recherchée |
-|---|---|---|
-| Volumétrie (comptage des lignes) | Après une étape de nettoyage ou de transformation | Table vide ou rupture de flux |
-| Intégrité et clés orphelines | Après un croisement ou une jointure | Lignes perdues, doublons ou enregistrements orphelins |
-| Valeurs nulles | Sur les colonnes critiques : montants, dates, identifiants | Données manquantes ou mal formatées |
-| Cohérence et plages de valeurs | Sur les métriques : montants, températures, etc. | Valeur impossible ou erreur de logique métier |
+| Type de contrôle                 | Moment d’utilisation                                       | Anomalie recherchée                            |
+|----------------------------------|------------------------------------------------------------|------------------------------------------------|
+| Volumétrie (comptage des lignes) | Après une étape de nettoyage ou de transformation          | Table vide ou rupture de flux     
+| Intégrité et clés orphelines     | Après un croisement ou une jointure                 | Lignes perdues, doublons ou enregistrements orphelins |
+| Valeurs nulles                   | Sur les colonnes critiques : montants, dates, identifiants | Données manquantes ou mal formatées            |
+| Cohérence et plages de valeurs   | Sur les métriques : montants, températures, etc.           | Valeur impossible ou erreur de logique métier  |
 
 ## Jour 3 — Jeudi 12 : la météo entre dans la chaîne
 
@@ -103,12 +103,12 @@ Un contrôle final peut signaler une anomalie sans localiser son origine ni pré
 
 Comptage des lignes dans DBeaver :
 
-| Table | Lignes |
-|---|---:|
-| `meteo_assurrisk` | 21 930 |
-| `villes_coordonnees_meteo` | 31 |
-| `meteo_assurrisk_ville` | 21 930 |
-| `fact_sinistre_meteo` | 12 098 |
+| Table                      | Lignes |
+|----------------------------|--------|
+| `meteo_assurrisk`          | 21 930 |
+| `villes_coordonnees_meteo` | 31     |
+| `meteo_assurrisk_ville`    | 21 930 |
+| `fact_sinistre_meteo`      | 12 098 |
 
 La table des coordonnées a une ligne de plus que les 30 villes : la ligne `inconnu`, avec des coordonnées `NULL`.
 
@@ -136,14 +136,14 @@ J’ai aussi écrit `compter_lignes(nom_table)` : cette fonction interroge la ba
 
 **Contrôles obtenus :**
 
-| Contrôle | Résultat |
-|---|---:|
-| Sinistres propres | 12 098 |
-| Lignes météo | 21 930 |
-| Villes rattachées | 30 |
-| Sinistres finaux | 12 098 |
-| Sinistres sans météo | 0 |
-| Doublons météo | 0 |
+| Contrôle             | Résultat |
+|----------------------|----------|
+| Sinistres propres    | 12 098   |
+| Lignes météo         | 21 930   |
+| Villes rattachées    | 30       |
+| Sinistres finaux     | 12 098   |
+| Sinistres sans météo | 0        |
+| Doublons météo       | 0        |
 
 ## Jour 4 — Vendredi 13 : livrer et montrer
 
@@ -161,15 +161,15 @@ En retirant `exist_ok=True`, la création du dossier `sorties` échoue lors d’
 
 ### Exercice 3 — Le journal et deux lancements
 
-| Étape | Lancement 1 (s) | Lancement 2 (s) |
-|---|---:|---:|
-| `01_init.sql` | 65,7 | 114,6 |
-| `02_clean.sql` | 14,9 | 26,6 |
-| `03_tables_meteo.sql` | 0,1 | 0,1 |
-| Chargement météo | 0,2 | 0,3 |
-| `04_rattachement.sql` | 0,1 | 0,2 |
-| `05_croisement.sql` | 0,1 | 0,3 |
-| `06_controles.sql` | 0,0 | 0,1 |
+| Étape                   | Lancement 1 (s) | Lancement 2 (s) |
+|-------------------------|-----------------|-----------------|
+| `01_init.sql`           | 65,7            | 114,6           |
+| `02_clean.sql`          | 14,9            | 26,6            |
+| `03_tables_meteo.sql`   | 0,1             | 0,1             |
+| Chargement mété         | 0,2             | 0,3             |
+| `04_rattachement.sql`   | 0,1             | 0,2             |
+| `05_croisement.sql`     | 0,1             | 0,3             |
+| `06_controles.sql`      | 0,0             | 0,1             |
 
 Les deux lancements comportent les mêmes étapes; les durées peuvent varier. Les contrôles relevés sont 12 098 sinistres propres et finaux, 21 930 lignes météo, 30 villes rattachées, aucun sinistre sans météo et aucun doublon météo.
 
