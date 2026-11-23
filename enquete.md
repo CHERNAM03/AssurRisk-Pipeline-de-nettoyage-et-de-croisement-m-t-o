@@ -77,20 +77,20 @@ La Normandie passe de 9,3 % à 11,3 % (+2 points), et les Hauts-de-France
 augmentent de 1,5 point. L’Occitanie baisse de 1,3 point et la Bretagne de
 1,1 point. Ces écarts ne démontrent pas qu’une tempête a causé le pic.
 
-| Région | Octobre (%) | Reste (%) | Écart (points) |
-|---|---:|---:|---:|
-| Normandie | 11,3 | 9,3 | +2,0 |
-| Hauts-de-France | 7,6 | 6,2 | +1,5 |
-| Pays de la Loire | 6,5 | 6,1 | +0,4 |
-| Provence-Alpes-Côte d’Azur | 13,5 | 13,1 | +0,4 |
-| Auvergne-Rhône-Alpes | 10,7 | 10,6 | +0,1 |
-| Centre-Val de Loire | 3,0 | 3,2 | −0,2 |
-| Bourgogne-Franche-Comté | 6,1 | 6,4 | −0,3 |
-| Île-de-France | 2,8 | 3,2 | −0,4 |
-| Nouvelle-Aquitaine | 6,8 | 7,3 | −0,5 |
-| Grand Est | 12,1 | 12,7 | −0,6 |
-| Bretagne | 5,3 | 6,3 | −1,1 |
-| Occitanie | 14,3 | 15,6 | −1,3 |
+| Région                     | Octobre (%) | Reste (%) | Écart (points) |
+|----------------------------|-------------|-----------|----------------|
+| Normandie                  | 11,3        | 9,3       | +2,0           |
+| Hauts-de-France            | 7,6         | 6,2       | +1,5           |       
+| Pays de la Loire           | 6,5         | 6,1       | +0,4           |
+| Provence-Alpes-Côte d’Azur | 13,5        | 13,1      | +0,4           |
+| Auvergne-Rhône-Alpes       | 10,7        | 10,6      | +0,1           |
+| Centre-Val de Loire        | 3,0         | 3,2       | −0,2           |
+| Bourgogne-Franche-Comté    | 6,1         | 6,4       | −0,3           |
+| Île-de-France              | 2,8         | 3,2       | −0,4           |
+| Nouvelle-Aquitaine         | 6,8         | 7,3       | −0,5           |
+| Grand Est                  | 12,1        | 12,7      | −0,6           |
+| Bretagne                   | 5,3         | 6,3       | −1,1           |
+| Occitanie                  | 14,3        | 15,6      | −1,3           |
 
 ### Conclusion et confiance
 
@@ -165,16 +165,16 @@ sinistre, plutôt que les nombres bruts, qui dépendent de la taille des groupes
 - Parmi les inondations, **75 %** des dossiers sont refusés.
 - Pour les dégâts des eaux, **34,0 %** sont clôturés et **25,5 %** expertisés.
 
-| Type de sinistre | Clôturé (%) | Déclaré (%) | En cours (%) | Expertisé (%) | Refusé (%) |
-|---|---:|---:|---:|---:|---:|
-| Bris de glace | 14,1 | 8,2 | 35,3 | 7,1 | 35,3 |
-| Dégât des eaux | 34,0 | 9,2 | 22,7 | 25,5 | 8,5 |
-| Grêle | 31,1 | 6,7 | 31,1 | 0,0 | 31,1 |
-| Incendie | 98,7 | 1,3 | 0,0 | 0,0 | 0,0 |
-| Inondation | 25,0 | 0,0 | 0,0 | 0,0 | 75,0 |
-| Responsabilité civile | 55,6 | 0,0 | 0,0 | 44,4 | 0,0 |
-| Tempête | 45,9 | 1,7 | 6,6 | 32,8 | 13,1 |
-| Vol | 47,3 | 5,5 | 23,6 | 23,6 | 0,0 |
+| Type de sinistre      | Clôturé (%) | Déclaré (%) | En cours (%) | Expertisé (%) | Refusé (%) |
+|-----------------------|-------------|-------------|--------------|---------------|------------|
+| Bris de glace         | 14,1        | 8,2         | 35,3         | 7,1           | 35,3       |
+| Dégât des eaux        | 34,0        | 9,2         | 22,7         | 25,5          | 8,5        |
+| Grêle                 | 31,1        | 6,7         | 31,1         | 0,0           | 31,1       |
+| Incendie              | 98,7        | 1,3         | 0,0          | 0,0           | 0,0        |
+| Inondation            | 25,0        | 0,0         | 0,0          | 0,0           | 75,0       |
+| Responsabilité civile | 55,6        | 0,0         | 0,0          | 44,4          | 0,0        |
+| Tempête               | 45,9        | 1,7         | 6,6          | 32,8          | 13,1       |
+| Vol v                 | 47,3        | 5,5         | 23,6         | 23,6          | 0,0        |
 
 ### Conclusion et confiance
 

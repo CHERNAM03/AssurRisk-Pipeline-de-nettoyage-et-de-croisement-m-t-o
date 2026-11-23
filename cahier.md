@@ -10,11 +10,11 @@ Avec `append`, une nouvelle étape s’ajoute à la fin de la liste. Une paire a
 
 Quelques erreurs rencontrées pendant les manipulations :
 
-| Manipulation | Erreur observée |
-|---|---|
-| Accéder à `etapes[12]`, qui n’existe pas | `IndexError` |
-| Retirer `.items()` de la boucle du dictionnaire | `ValueError` |
-| Retirer l’indentation d’une ligne de boucle | `IndentationError` |
+| Manipulation                                    | Erreur observée    |
+|-------------------------------------------------|--------------------|
+| Accéder à `etapes[12]`, qui n’existe pas        | `IndexError`       |
+| Retirer `.items()` de la boucle du dictionnaire | `ValueError`       |
+| Retirer l’indentation d’une ligne de boucle     | `IndentationError` |
 
 **À quoi sert une boucle ?** Une boucle répète automatiquement des instructions pour chaque élément d’une liste ou d’une collection.
 
