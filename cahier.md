@@ -1,405 +1,207 @@
+# Cahier de suivi — Projet AssurRisk
 
-# JOUR 1 — LUNDI 9 : combien de fois faut-il cliquer ?
+## Jour 1 — Lundi 9 : premières manipulations
 
-# Exercice 1 — Remise en main
+### Exercice 1 — Remise en main
 
-# 1.Lancez rappel_22_octobre.py
+Le script contient une liste de quatre étapes et un dictionnaire de paires clé-valeur. Le premier élément de la liste, à l’index 0, est « Réinitialiser la base ».
 
-# 2.Montrez à votre binôme
-On a une liste de taille 4 dont le premier élement d'index 0 est Réinitialiser la base
-Un dictionnaire des ensembles de clés valeur
+Avec `append`, une nouvelle étape s’ajoute à la fin de la liste. Une paire ajoutée au dictionnaire apparaît dans la boucle qui parcourt ce dictionnaire.
 
-# 3 Ajoutez une étape à la liste etapes avec append , et une paire au dictionnaire
-# fichiers . Relancez. Où apparaissent-elles ?
- cela a été fait dans le code ci-dessus, cela apparait à la fin comme étant le dernier 
- élément de la liste et le dernier élément du dictionnaire.
+Quelques erreurs rencontrées pendant les manipulations :
 
-# 4 Affichez etapes[0] , puis etapes[2] , puis etapes[12] . Lisez le message
-# d’erreur de la troisième : dernière ligne, fichier, numéro de ligne.
+| Manipulation | Erreur observée |
+|---|---|
+| Accéder à `etapes[12]`, qui n’existe pas | `IndexError` |
+| Retirer `.items()` de la boucle du dictionnaire | `ValueError` |
+| Retirer l’indentation d’une ligne de boucle | `IndentationError` |
 
-On a un message d'erreur de type IndexError au niveau de la ligne 23 et au niveau de etapes
-car une étape d'index 12 n'existe pas dans la liste que nous avons
+**À quoi sert une boucle ?** Une boucle répète automatiquement des instructions pour chaque élément d’une liste ou d’une collection.
 
-# 5 Retirez .items() dans la dernière boucle, relancez, lisez l’erreur, remettez-le.
- On a un message d'erreur de type ValueError au niveau de la ligne 61 et au niveau de la boucle for.
+### Exercice 2 — L’inventaire, chronomètre en main
 
-# 6 Enlevez les quatre espaces devant une ligne de boucle, relancez, lisez le
-# message, remettez-les.
+Travail effectué en binôme avec Raoul Zamble; le rendu a été écrit dans son cahier.
 
-On a un message d'erreur de type IndentationError au niveau de la ligne 62 et au niveau de la boucle for.
+### Exercice 3 — Première connexion à la base
 
-# 7. Écrivez dans votre cahier, en une phrase : à quoi sert une boucle ?
+Le script s’est connecté à la base dans DBeaver et l’a réinitialisée. La requête `SELECT COUNT(*) FROM fact_sinistre` a renvoyé 12 490 lignes.
 
-Une boucle sert à répéter automatiquement les mêmes instructions pour chaque élément d’une liste ou d’une collection, sans réécrire le code à chaque fois.
+Sans `connexion.autocommit = True`, je n’ai pas remarqué de changement important, sauf une connexion à DBeaver plus lente. Les modifications ne sont toutefois pas validées tant que la transaction n’est pas commitée.
 
-# Exercice 2 — L’inventaire, chronomètre en main
+### Exercice 4 — Lire la structure des données météo
 
-travail en binome, effectué avec Raoul Zamble, le rendu a été écrit dans son cahier
+Le fichier météo contient une liste de 30 objets. Les clés des objets sont `latitude`, `longitude` et `daily`. Le DataFrame `meteo` a la forme `(21930, 8)`, soit 21 930 lignes et 8 colonnes.
 
-# 3. Ajoutez une étape
-Avec la methode append, l’étape apparaîtra dans la liste et dans la boucle qui affiche les tâches.
-la paire apparaîtra dans la boucle qui parcourt le dictionnaire.
+À chaque tour de boucle, le script crée un tableau pour une ville et l’ajoute à `morceaux`. La liste est créée avant la boucle pour conserver les 30 tableaux, qui sont ensuite assemblés.
 
-# Exercice 2 — L’inventaire, chronomètre en main 
+## Jour 2 — Mardi 10 : la chaîne s’enchaîne toute seule
 
-# Exercice 3
-En deux secondes, le script m'a permis de me connecter à la base de données dans dbeaver et la base a été réinitilisée.
-Une premiére vérification de la table fact sinitre dans Dbeaver avec un select count(*) from fact_sinistre me donne 12490 ligne ou enregistrements
+### Exercice 1 — Ranger et numéroter
 
-2. Ce qui apparaît à l’écran est que la connexion est ouverte et que la base a été réinitialisée.
-pas 
- 3. Si on retire la ligne connexion.autocommit = True , j'ai pas remarqué de changement notoire , à par la connexion à dbeaver a pris plus de temps, mais les modifications ne seront pas enregistrées dans la base de données car on n'a pas validé la transaction.
-# Exercice 4
+Les scripts SQL sont organisés dans l’ordre où ils doivent s’exécuter :
 
-Recopiez les trois lignes ci-dessus et répondez aux trois questions qu’elles posent.
-Aprés avoir recopier les lgnes indiquées on a :
---- On a une liste class
---- avec 30 objets
---- des dictionnaires ayant comme clés
- dict_keys(['latitude', 'longitude', 'daily'])
+1. `01_init.sql`
+2. `02_clean.sql`
+3. `03_tables_meteo.sql`
+4. `04_rattachement.sql`
+5. `05_croisement.sql`
+6. `06_controles.sql`
 
+`04_rattachement.sql` associe chaque couple latitude/longitude retourné par Open-Meteo à la ville de référence la plus proche. Il ne peut donc pas s’exécuter avant le chargement de la météo.
 
- ## Les questions, et elles comptent plus que le code : 
- 1. meteo.shape
-donne deux nombres. Lequel est le nombre de lignes ? 
-le premier donne le nombre de logne, ici on 21930 et 8 colonnes
+`02_clean.sql` ne peut pas s’exécuter avant `01_init.sql`, car les tables sources, comme `dim_agence`, n’existent pas encore. Pour nettoyer les données, il faut d’abord initialiser la base, puis lancer le script de nettoyage.
 
- 2. Vous attendiez-vous à ce nombre ? 30 villes × combien de
-jours ?
- 3. Qu’est-ce que morceaux.append(tableau) fait exactement ? Et
-pourquoi morceaux est-il créé avant la boucle ?
- À chaque tour de boucle (pour chaque ville), le script fabrique un petit bout de tableau et le range dans la boîte nommée morceaux. À la fin des 30 tours, notre boîte va contenir 30 petits tableaux côte à côte.
+### Exercice 2 — La liste et la boucle
 
+L’ajout d’une quatrième étape à la liste s’effectue en une seule ligne avec la méthode `append`.
 
-01_init.sql
-02_clean.sql
-03_tables_meteo.sql
-04_rattachement.sql
-05_croisement.sql
-06_controles.sql
+### Exercice 3 — Premier lancement complet
 
+Le pipeline a réinitialisé la base, lu 30 villes et construit un tableau météo de 21 930 lignes et 8 colonnes. Il a ensuite exécuté les étapes SQL dans l’ordre prévu.
 
-# JOUR 2 — MARDI 10 : la chaîne s’enchaîne toute seule
+### Exercice 4 — Le journal des étapes
 
-## Exercice 1 — Ranger et numéroter 
+Lors d’un lancement, la réinitialisation de la base était l’étape la plus longue :
 
-Dans sql/ , mes fichiers des briefs précédents sont déjà là. Je les numérote dans l’ordre où ils doivent tourner, et je les ai renommé.
+| Fichier | Étape | Outil | Durée (s) |
+|---|---|---|---:|
+| `01_init.sql` | Réinitialiser la base | SQL | 156,8 |
+| `02_clean.sql` | Construire la couche propre | SQL | 36,1 |
+| `03_tables_meteo.sql` | Créer les tables météo | SQL | 0,0 |
+| `04_rattachement.sql` | Rattacher la météo aux sinistres | SQL | 0,0 |
+| `05_croisement.sql` | Croiser les sinistres et la météo | SQL | 0,1 |
+| `06_controles.sql` | Contrôler le résultat | SQL | 0,0 |
 
-La question, et elle n’est pas technique : pourquoi 04_rattachement.sql
-ne peut-il pas tourner avant que la météo soit chargée ?
+### Exercice 5 — Contrôler après chaque étape
 
-Par ce que c'est un  fichier qui permet d'associer chaque couple latitude/longitude retourné par Open-Meteo
- à la ville de référence la plus proche.
+#### Combien de lignes dans `clean_fact_sinistre` ?
 
+La table brute `fact_sinistre` contenait 12 490 lignes. Après le nettoyage par `02_clean.sql`, `clean_fact_sinistre` en contient 12 098.
 
- Et celle-ci : qu’est-ce qui se passerait si on lançait 02_clean.sql avant
-01_init.sql ? Essayez. Lisez l’erreur. C’est une bonne erreur à avoir vue une
-fois.
-Pour tester l'execution avant l'initialisation, je me connecte, d'abord, dans Dbeaver, j'ouvre 02_clean.sql, puis je choisis SQL - Editor Execute SQL Script. LMe script a échoué  dés qu'il tente de lire dim_agence, car cette table n'existre pas. 
+Le résultat est conforme aux attentes. Le nettoyage exclut notamment les doublons, les dates de survenance anormales, les contrats non actifs, les localisations manquantes et les montants anormaux; certains libellés sont corrigés.
 
-Pour que le nettoyage s’exécute correctement, lance d’abord 01_ini.sql, puis 02_clean.sql. Le fichier 02_clean.sql crée plusieurs tables clean_* à partir des tables sources; il ne peut donc pas fonctionner avant leur création.
+#### Quelle étape vérifier en premier si le nombre était incorrect ?
 
-## Exercice 2 — La liste et la boucle
+Je vérifierais d’abord `02_clean.sql`, notamment ses filtres `WHERE`, la suppression des doublons (`DISTINCT` ou `ROW_NUMBER`) et les jointures. Une mauvaise jointure peut multiplier les lignes ou en éliminer. Je vérifierais ensuite les données sources et leur chargement par `01_init.sql`.
 
+#### Que ne dit pas un contrôle placé uniquement à la fin ?
 
-# Puis ajoutez-en une quatrième. Combien de lignes avez-vous écrites pour ça ?
+Un contrôle final peut signaler une anomalie sans localiser son origine ni préciser la règle de gestion qui a échoué. Les contrôles intermédiaires permettent de circonscrire le problème à une étape.
 
-Pour effectuer cette tache j'ai ecris une seule ligne, on a une liste, pour ce faire on a utilisé la méthode append.
+#### Mise en commun — types de contrôles
 
-# Exercice 3 — Premier lancement complet
-base reinitialisee
-<class 'list'>
-30
-dict_keys(['latitude', 'longitude', 'daily'])
-(21930, 8)
- [SQL] Reinitialiser la base
- [SQL] Construire la couche propre
- [SQL] Creer les tables qui attendent la meteo
- [SQL] Rattacher la météo aux sinistres
- [SQL] Croiser les sinistres et la météo
- [SQL] Contrôler le résultat
+| Type de contrôle | Moment d’utilisation | Anomalie recherchée |
+|---|---|---|
+| Volumétrie (comptage des lignes) | Après une étape de nettoyage ou de transformation | Table vide ou rupture de flux |
+| Intégrité et clés orphelines | Après un croisement ou une jointure | Lignes perdues, doublons ou enregistrements orphelins |
+| Valeurs nulles | Sur les colonnes critiques : montants, dates, identifiants | Données manquantes ou mal formatées |
+| Cohérence et plages de valeurs | Sur les métriques : montants, températures, etc. | Valeur impossible ou erreur de logique métier |
 
-# Exercice 4 — Le journal : chaque étape dit ce qu’elle a fait
+## Jour 3 — Jeudi 12 : la météo entre dans la chaîne
 
-## Ouvrez journal_pipeline.csv dans Excel. Quelle étape prend le plus de temps ? Vous attendiez-vous à celle-là ?
+### Exercice 1 — Du JSON à la base
 
-La réinitialisation prend le plsunde temps avec !
-01_init.sql;Reinitialiser la base;SQL;156,8
-02_clean.sql;Construire la couche propre;SQL;36,1
-03_tables_meteo.sql;Creer les tables qui attendent la meteo;SQL;0,0
-04_rattachement.sql;Rattacher la météo aux sinistres;SQL;0,0
-05_croisement.sql;Croiser les sinistres et la météo;SQL;0,1
-06_controles.sql;Contrôler le résultat;SQL;0,0
+Comptage des lignes dans DBeaver :
 
+| Table | Lignes |
+|---|---:|
+| `meteo_assurrisk` | 21 930 |
+| `villes_coordonnees_meteo` | 31 |
+| `meteo_assurrisk_ville` | 21 930 |
+| `fact_sinistre_meteo` | 12 098 |
 
-# Exercice 5 — Contrôler après chaque étape, pas à la fin
+La table des coordonnées a une ligne de plus que les 30 villes : la ligne `inconnu`, avec des coordonnées `NULL`.
 
-Contexte
- Mise en place de contrôles intermédiaires (assertions / comptages de lignes) dans le pipeline SQL AssurRisk1
- (notamment après 02_clean.sql) pour valider la qualité et l'intégrité des données à chaque maillon de la chaîne de transformation.
+### Exercice 2 — La garde
 
-### Trois questions :
-#### 1. Combien de lignes attendiez-vous dans clean_fact_sinistre avant de lancer ? Et combien en avez-vous obtenu ? 
- 
-Q1 : Combien de lignes attendiez-vous dans clean_fact_sinistre avant de lancer ? Et combien en avez-vous obtenu ?je m'attendais à moins que ce que j'ai eu dés le départ dans fact_sinistre, c'est à dire  12490 lignes et aprés le controle on se retrouve avec 12098. En bref : le nettoyage a produit une table de 12 098 sinistres.
+Avant d’appeler l’API, le script doit lire les coordonnées des villes à interroger et créer les tables PostgreSQL qui recevront les données météo.
 
-Attendu : Environ [12490] lignes (correspondant au nombre de lignes de la table brute de départ, moins les doublons évidents et les enregistrements présentant des valeurs aberrantes ou manquantes majeures).
+Si plusieurs personnes lancent le pipeline en même temps sans garde, les requêtes simultanées peuvent ralentir les réponses de l’API. Une garde aide à éviter cette surcharge.
 
-Obtenu : [12098] lignes après l'exécution de 02_clean.sql.
+### Exercice 3 — Brancher la météo au bon endroit
 
-Constat : Le résultat est conforme aux attentes, en effet aprées nettoyage 392 ( 100 doublons, 80 anomalies sur la date de survenance, 100 contrats non actifs au moment du sinistre, localisations manquantes 60, montants anormaux 50 et libellés non standardisés (correction appliquée)) lignes ont été exclues de la table.
+Les étapes SQL sont des fichiers à lire et à exécuter, tandis que le chargement météo est du Python (pandas et `COPY` via le curseur). Le séparer rend explicite qu’il doit se placer entre la création des tables et le rattachement.
 
-#### 2.Si ce nombre était faux, quelle étape soupçonneriez-vous en premier ?
-Q2 : Si ce nombre était faux, quelle étape soupçonneriez-vous en premier ?
-Si le nombre de lignes s'avérait anormal (trop bas ou anormalement haut) :
+### Exercice 4 — Rattachement et croisement
 
-Le script 02_clean.sql lui-même : En particulier les conditions de filtrage (WHERE), les critères de suppression des doublons (DISTINCT ou ROW_NUMBER), ou des jointures mal ficelées qui auraient créé un produit cartésien ou éliminé à tort des lignes valides (sur-filtrage).
+Le rattachement et le croisement sont exécutés après le chargement Python des données météo et des coordonnées.
 
-La qualité de la source en amont (01_ini.sql) : Si les données brutes ont changé ou si le chargement initial a omis des données.
+### Exercice 5 — Comprendre les fonctions du pipeline
 
+Les valeurs qui changent d’un appel à l’autre (fichier, libellé, outil et durée) sont les paramètres de `journaliser_etape`. Par exemple, `jouer_sql()` transmet `"SQL"` et `charger_table()` transmet `"Python"`.
 
+La fonction centralise la structure de chaque entrée du journal. Après l’ajout de la colonne statut, elle ajoute également `"ok"` à chaque étape. Un seul `journal.append` dans la fonction remplace les ajouts répétés dans les différents traitements.
 
-#### 3. Un contrôle placé seulement à la fin vous dirait qu’il y a un problème. Que ne vous dirait-il pas ?
+J’ai aussi écrit `compter_lignes(nom_table)` : cette fonction interroge la base et renvoie le nombre de lignes avec `return`.
 
-Q3 : Un contrôle placé seulement à la fin vous dirait qu’il y a un problème. Que ne vous dirait-il pas ?
-Un contrôle unique en fin de pipeline indique qu'il y a une anomalie dans le résultat final, mais il ne permet pas de localiser l'origine de l'erreur.
+**Contrôles obtenus :**
 
-Plus précisément, il ne dit pas :
+| Contrôle | Résultat |
+|---|---:|
+| Sinistres propres | 12 098 |
+| Lignes météo | 21 930 |
+| Villes rattachées | 30 |
+| Sinistres finaux | 12 098 |
+| Sinistres sans météo | 0 |
+| Doublons météo | 0 |
 
-Où dans la chaîne de traitement le problème s'est produit (est-ce 02_clean.sql, l'intégration météo, ou le croisement final ?).
+## Jour 4 — Vendredi 13 : livrer et montrer
 
-Pourquoi la règle de gestion a échoué (est-ce un problème de jointure, un filtre trop agressif, ou une corruption de données ?).
+### Exercice 1 — Le pipeline range derrière lui
 
-Cela oblige à reprendre le pipeline de zéro et à enquêter à l'aveugle, alors qu'un contrôle intermédiaire cloisonne l'erreur à une étape précise dès son apparition.
+En retirant `exist_ok=True`, la création du dossier `sorties` échoue lors d’une seconde exécution avec `FileExistsError`, car le dossier existe déjà. `exist_ok=True` permet au script de continuer si ce dossier existe.
 
-## Mise en commun — quel contrôle attrape quoi
+### Exercice 2 — Casser une étape exprès
 
-#### Elle résume les différents types de contrôles que l'on peut placer dans un pipeline de données et le type d'anomalie spécifique que chacun permet d'intercepter.
+**À quel moment le pipeline s’arrête-t-il ?** Le journal ne contient que ses en-têtes si l’exécution s’interrompt avant son écriture finale. Le traceback du terminal permet de repérer l’erreur; lors de l’essai, c’était un `FileNotFoundError` pour `sql/01_ini.sql`.
 
-|****************************************************************************************************|
-|  Type de contrôle      | À quel moment / Où ?                 | Ce qu'il attrape (Anomalie ciblée) |
-|****************************************************************************************************|
-| Contrôle de volumétrie |  Après une étape de nettoyage        |Une table vide(rupture deflux)      |
-|(Comptage de lignes)    |  (02_clean.sql) ou de transformation |                                    |
-|****************************************************************************************************|
-| Contrôle d'intégrité   |Après un croisement ou une jointure   | Des enregistrements perdus lors    |
-| / Clés orphelines      | (ex: 03_croisement.sql)              | d'une jointure, doublons, etc..    |
-|****************************************************************************************************|
-| Contrôle de valeurs nulles| Sur des colonnes critiques ex:     | Des données corrompues ou mal     |
-|                           | montants de sinistres,dates,Id     | formatées en amont                |
-|****************************************************************************************************|
-| Contrôle de cohérence     |Sur des métriques (ex: un montant   |Des erreurs de logique métier dans |
-| Plages de valeurs         | négatif, une température aberrante)|les scripts SQL                    |
-|*****************************************************************************************************       
+**Le journal permet-il d’identifier l’étape en échec ?** Pas toujours : s’il est écrit seulement à la fin, les messages `[SQL]` du terminal montrent jusqu’où le pipeline est allé.
 
+**Dans quel état se trouve la base ?** Avec `connexion.autocommit = True`, les commandes terminées avant l’erreur peuvent déjà être enregistrées. La base peut donc être dans un état partiel. Il faut relever le traceback avant de relancer le pipeline, car `01_init.sql` réinitialise les tables.
 
-# JOUR 3 — JEUDI 12 : la météo entre dans la chaîne
+### Exercice 3 — Le journal et deux lancements
 
-## 
+| Étape | Lancement 1 (s) | Lancement 2 (s) |
+|---|---:|---:|
+| `01_init.sql` | 65,7 | 114,6 |
+| `02_clean.sql` | 14,9 | 26,6 |
+| `03_tables_meteo.sql` | 0,1 | 0,1 |
+| Chargement météo | 0,2 | 0,3 |
+| `04_rattachement.sql` | 0,1 | 0,2 |
+| `05_croisement.sql` | 0,1 | 0,3 |
+| `06_controles.sql` | 0,0 | 0,1 |
 
+Les deux lancements comportent les mêmes étapes; les durées peuvent varier. Les contrôles relevés sont 12 098 sinistres propres et finaux, 21 930 lignes météo, 30 villes rattachées, aucun sinistre sans météo et aucun doublon météo.
 
-# Exercice 1 — Du JSON à la base · 70 min
+### Exercice 4 — Versionner le projet avec Git
 
-#### Faites la même chose pour villes_coordonnees_meteo.csv .
-#### Puis, dans DBeaver, comptez les lignes des deux tables.
+Un premier essai de `git commit` a répondu `nothing to commit` parce que `cahier.md` n’avait pas été ajouté à la zone de préparation. La séquence correcte pour ce fichier est :
 
-|*************************************|
-|meteo_assurrisk              |	21930 |
-|villes_coordonnees_meteo     |	31    |
-|meteo_assurrisk_ville	      |21930  |
-|fact_sinistre_meteo	      |12098  |
-**************************************|
-
-Effectivement on a une ligne de plus dans la table coordonnées villes avec 31 lignes au lieu de 30
-Au niveau de ligne 30, on a Inconnu, NULL, NULL oubli ou erreur de saisie.
-
-# Exercice 2 — La garde : 
-
-#### Écrivez d’abord, en français, dans votre cahier : en une phrase, que doit faire
-#### le script avant d’appeler l’API ?
-
-Avant d’appeler l’API, le script doit lire les coordonnées des villes à interroger et créer 
-les tables PostgreSQL qui recevront les données météo.
-
-##### La question : vous êtes quinze dans la salle. Si chacun lance son pipeline
-##### en même temps sans cette garde, que se passe-t-il ? Et avec la garde ?
-L'api pourrait mettre du temps à répondre, trop de requetes en meme temps, et la garde nous permettrait 
-d'échapper à cette lourdeur.
-
-
-# Exercice 3 — Brancher la météo au bon endroit 
-
-On peut techniquement tout mettre dans une seule boucle, mais la boucle du mardi suppose que chaque étape est un fichier SQL à lire puis à exécuter. L’étape météo est du Python (pandas et COPY via le curseur), pas un fichier SQL : elle ne suit donc pas la même procédure.
-Séparer les boucles rend aussi explicite qu’elle doit se placer entre la création des tables et le rattachement.
-
-# Exercice 4 — Le rattachement et le croisement rejoignent la chaîne 
-Ils seront donc exécutés après le chargement Python des données météo et des coordonnées.
-
-
-
-# JOUR 4 — VENDREDI 13 : livrer, et montrer
-
-# Exercice 1 — Le pipeline range derrière lui
-
-#### La question : pourquoi exist_ok=True ? (Retirez-le, lancez deux fois, lisez l’erreur, remettez-le.)
-type d'erreur : FileExistsError: [WinError 183] Impossible de créer un fichier déjà existant: 'sorties'
-drop table if exist en SQL
-
-
-
-# Exercice 3 — Cassez une étape exprès:
-## Trois questions : 
-1. À quel moment le pipeline s’arrête-t-il ?
-  Le journal_pipeline.csv ne contient que ses en-têtes : aucune étape n’y a été enregistrée. Le script écrit le journal seulement à la fin; il s’est donc probablement arrêté avant cette écriture. Le fichier seul ne permet pas de savoir à quelle ligne. Il faut regarder le traceback affiché dans le terminal pour trouver l’erreur et l’étape concernée.
-  Ainsi, on note à la ligne 77  une erreur de type FileNotFoundError: [Errno 2] No such file or directory: 'sql/01_ini.sql'
-
-2. Le journal permet-il de savoir quelle étape a échoué ? 
-  Non. Il est vide parce qu’il n’est sauvegardé qu’à la fin. Les messages [SQL] affichés avant l’erreur dans le terminal peuvent toutefois montrer jusqu’où le script est allé.
-
-
-3. Les étapes précédentes, elles, ont-elles été faites ? Donc dans quel état est la base ?
-   Peut-être. Le script active connexion.autocommit = True, donc les commandes terminées avant l’erreur peuvent déjà être enregistrées dans la base. Comme 01_ini.sql réinitialise des tables, la base peut être dans un état partiel : certaines étapes faites, les suivantes non. Ne relance pas le pipeline avant d’avoir relevé le traceback; une nouvelle exécution pourrait réinitialiser encore la base.
-
-
-
- # ======================================================================================================
-   Les deux journaux de deux lancements successifs, et une ligne disant ce qui est identique.
-
- Ainsi le premier lancement donne les resultats suivants:
-
-   fichier;etape;outil;secondes
-01_init.sql;Reinitialiser la base;SQL;65,7
-02_clean.sql;Construire la couche propre;SQL;14,9
-03_tables_meteo.sql;Creer les tables qui attendent la meteo;SQL;0,1
-chargement_meteo.py;Charger les données météo et villes;Python;0,2
-04_rattachement.sql;Rattacher la météo aux sinistres;SQL;0,1
-05_croisement.sql;Croiser les sinistres et la météo;SQL;0,1
-06_controles.sql;Contrôler le résultat;SQL;0,0:
-
-# ************************************************************************************************
-  le deuxiéme lancement donne les resultats suivants:
-
-  fichier;etape;outil;secondes
-01_init.sql;Reinitialiser la base;SQL;114,6
-02_clean.sql;Construire la couche propre;SQL;26,6
-03_tables_meteo.sql;Creer les tables qui attendent la meteo;SQL;0,1
-chargement_meteo.py;Charger les données météo et villes;Python;0,3
-04_rattachement.sql;Rattacher la météo aux sinistres;SQL;0,2
-05_croisement.sql;Croiser les sinistres et la météo;SQL;0,3
-06_controles.sql;Contrôler le résultat;SQL;0,1
-
-La ligne de comparaison peut être : « Les deux lancements ont les mêmes étapes et les mêmes résultats de contrôle; les durées peuvent varier. » Les contrôles actuellement enregistrés sont 12 098 sinistres propres et finaux, 21 930 lignes météo, 30 villes rattachées, 0 sinistre sans météo et 0 doublon météo. Pour affirmer que ces résultats sont identiques sur les deux lancements, il faudra comparer aussi le second fichier controles.csv.
-
-
-
-
-# Franchise : 
-
-La franchise moyenne est d’environ 228,70 €, et la médiane est de 200 € ; elle semble souvent suivre un barème fixe.
-
-# MA CONCLUSION, ET MA CONFIANCE │
-
-confirmée  
-
-
-# À noter dans le cahier avant de partir
-
-## 1. Ma case 5 de l’enquête sur octobre
-
-Les données confirment qu’octobre 2025 est un mois exceptionnellement chargé en sinistres et que les dégâts des eaux y occupent une part plus importante que le reste de la période. Cela rend mon hypothèse plausible, mais ne prouve pas que les fortes pluies ont causé le pic. Pour la vérifier, il faudrait comparer, pour chaque ville et chaque jour, les dégâts des eaux lors des journées très pluvieuses avec ceux des journées peu ou pas pluvieuses. Ma confiance dans le constat du pic est élevée; ma confiance dans son explication par la pluie reste limitée.
-
-## 2. La phrase de la case 3 qui m’a le plus servi
-
-« Si mon explication est vraie, je devrais voir beaucoup de sinistres liés aux dégâts des eaux concentrés à quelques dates ou dans certaines villes. »
-
-Cette phrase m’a servi parce qu’elle transforme mon idée en un résultat que je peux chercher dans les données : vérifier si les dégâts des eaux se concentrent réellement à certaines dates ou dans certaines villes.
-
-## 3. Une chose que je n’ai pas comprise aujourd’hui
-
-Exemple à garder seulement s’il correspond à ce que je ressens : « Je ne sais pas encore comment comparer les dégâts des eaux des jours très pluvieux à ceux des jours peu ou pas pluvieux, ville par ville. »
-
-
-# EXERCICE 2 du jeudi
-
-Qu’est-ce qui change d’un appel à l’autre ?
-Les valeurs enregistrées : le nom du fichier, le libellé de l’étape, l’outil utilisé ("SQL" ou "Python") et la durée. Ce sont les paramètres de la fonction :
-
-def journaliser_etape(fichier, libelle, outil, duree):
-
-Par exemple, l’appel depuis jouer_sql() fournit "SQL", tandis que celui depuis charger_table() fournit "Python"
-
-Qu’est-ce qui reste identique ?
-La structure de la ligne ajoutée au journal :
-
-journal.append([fichier, libelle, outil, duree])
-
-C’est le corps de la fonction : il construit une liste avec ces quatre valeurs et l’ajoute à journal.
-
-## Comment savoir que c'est juste ?
-
-- 1. Déja avec un ctrl + F , je me retrouve avec un journal.append au lieu de trois
-- 2. Effectivement, les six contrôles sont identiques à ceux de l’exercice 1.
-
- contrôle final : sinistres_propres = 12098
- contrôle final : lignes_meteo = 21930
- contrôle final : villes_meteo = 30
- contrôle final : lignes_finales = 12098
- contrôle final : sans_meteo = 0
- contrôle final : meteo_en_double = 0
-
-- 3. Ouvrez sorties/journal_pipeline.csv . La durée de 01_init.sql doit être de plus
-de 20 secondes.
- j'ai cela comme resultats : 01_init.sql;Reinitialiser la base;SQL;58,2
-
-
-
-# Exercice 2 du vendredi
-
-Sortie du git log online.....
-   f7adaf0..17adabe  update -> update
-(.venv) PS C:\Users\Utilisateur\Downloads\demarrage> git log --oneline
-17adabe (HEAD -> update, origin/update) Creation du fichier LISEZMOI.md
-4b062d2 Ajout La ligne affichera le nombre de lignes et de colonnes chargées
-8e313e6 Description de pipeline.py
-f7adaf0 Supprime le script de sauvegarde
-a297e05 Isolation de l'environnement virtuel
-d224bea modification du fichier  gitignore
-dcc6af2 test
-5abeb02 inclure le git ignore
-e136b76 mise à jour de mon dossier demarragge
-8f99204 (origin/nouvelle-feature, origin/documentation-pipeline, nouvelle-feature, main, documentation-pipeline) Premier commit de mon projet pipeline
-
-# BONUS DE L'EXERCICE 
-message
-
-(.venv) PS C:\Users\Utilisateur\Downloads\demarrage> git commit -m "Mise à jour du cahier"           
-On branch update
-Your branch is up to date with 'origin/update'.
-
-Changes not staged for commit:
-  (use "git add <file>..." to update what will be committed)
-  (use "git restore <file>..." to discard changes in working directory)
-        modified:   cahier.md
-
-no changes added to commit (use "git add" and/or "git commit -a")
-
-Git me dit que cahier.md a été modifié, mais pas ajouté à la zone de préparation. Le commit n’a donc rien enregistré.
-
-Pour ne committer que ce fichier :
+```powershell
 git add .\cahier.md
 git commit -m "Mise à jour du cahier"
-J’ai nommé ma troisième fonction `compter_lignes`, car elle renvoie le nombre de lignes d’une table.
-L’erreur « nothing to commit » venait du fait que j’avais oublié `git add` avant `git commit`.
-Je ne comprends pas encore pourquoi `psycopg2.sql.Identifier` est préférable à la concaténation du nom de table dans la requête.
+```
 
+J’ai appris à versionner mes dossiers, à créer des commits et à consulter l’historique avec `git log`. Il reste à comprendre comment `git restore` agit sur un fichier suivi par Git lorsque l’exécution du programme génère aussi un journal CSV.
 
-# EXERCICE 3 du VENDREDI
+### Bonus — Ce que j’ai retenu
 
-J’ai modifié pipeline.py pour le casser volontairement : plusieurs lignes ont été altérées ou supprimées. Je ne l’ai pas exécuté. Pour annuler ces changements et récupérer la version du dernier commit, lance git restore -- pipeline.py.
+J’ai compris l’intérêt des fonctions quand j’ai ajouté le statut `"ok"` au journal : une seule fonction commune permet de l’ajouter à chaque étape.
 
-# À noter dans le cahier avant de partir
+## Notes d’analyse
 
-Aujourd’hui, j’ai appris à versionner mes dossiers avec Git, à créer des commits et à consulter l’historique de mon travail.
-Ce qui reste flou : utiliser `git restore` quand le fichier restauré génère un journal CSV à son exécution; je veux comprendre ce que Git restaure et ce qui se régénère ensuite.
+### Enquête sur octobre 2025
 
-J'ai compris comment git fonctionne et comment suivrfe l'historique de nos projets
+Les données confirment qu’octobre 2025 est un mois particulièrement chargé et que les dégâts des eaux y occupent une part plus importante que le reste de la période. Cela rend l’hypothèse d’un rôle des pluies plausible, sans prouver qu’elles ont causé le pic. Pour la vérifier, il faudrait comparer, pour chaque ville et chaque jour, les dégâts des eaux lors des journées pluvieuses avec ceux des journées peu ou pas pluvieuses.
+
+La phrase qui m’a le plus aidé à formuler une vérification est : « Si mon explication est vraie, je devrais voir beaucoup de sinistres liés aux dégâts des eaux concentrés à quelques dates ou dans certaines villes. »
+
+### Franchise
+
+La franchise moyenne est d’environ 228,70 € et sa médiane est de 200 €; elle semble souvent suivre un barème fixe.
+
+## Bilan de la semaine
+
+- **Ce que je sais faire :** versionner mes dossiers avec Git, créer des commits et consulter l’historique du projet.
+- **Ce qui reste flou :** utiliser `git restore` et comprendre ce qui est restauré par Git par rapport à ce que le script régénère à l’exécution.
+- **Le moment où j’ai compris :** l’ajout du statut `"ok"` au journal m’a montré comment une fonction commune évite de répéter la même modification à plusieurs endroits.
