@@ -1,6 +1,11 @@
+
+# Pipeline Python et PostgreSQL qui initialise et nettoie les données d’assurance, charge les données météo 
+# et les coordonnées des villes, puis les rattache aux sinistres et contrôle les résultats.
+
 # Bibliothèques utilisées : connexion PostgreSQL, lecture/écriture des données,
 # chronométrage des étapes et gestion des fichiers de sortie.
 import psycopg2
+from psycopg2 import sql
 from getpass import getpass
 import json
 import pandas as pd
@@ -42,6 +47,50 @@ connexion = psycopg2.connect(
 connexion.autocommit = True
 curseur = connexion.cursor()
 print("connexion ouverte")
+
+
+def journaliser_etape(fichier, libelle, outil, duree):
+    journal.append([fichier, libelle, outil, duree, "ok"])
+
+
+def compter_lignes(nom_table):
+    requete = sql.SQL("SELECT COUNT(*) FROM {}").format(sql.Identifier(nom_table))
+    curseur.execute(requete)
+    return curseur.fetchone()[0]
+
+
+def jouer_sql(fichier, libelle):
+    debut = time.time()
+    with open("sql/" + fichier, encoding="utf-8") as fichier_sql:
+        requete = fichier_sql.read()
+    curseur.execute(requete)
+
+    duree = round(time.time() - debut, 1)
+    print(" [SQL]", libelle, "-", duree, "s")
+    journaliser_etape(fichier, libelle, "SQL", duree)
+
+    if fichier == "02_clean.sql":
+        curseur.execute("SELECT COUNT(*) FROM clean_fact_sinistre")
+        nombre_sinistres = curseur.fetchone()[0]
+        print(" contrôle : clean_fact_sinistre =", nombre_sinistres, "lignes")
+        controles.append([
+            fichier,
+            "Nombre de lignes dans clean_fact_sinistre",
+            nombre_sinistres
+        ])
+
+
+def charger_table(tableau, requete_copy, libelle):
+    debut = time.time()
+    tampon = io.StringIO()
+    tableau.to_csv(tampon, index=False, header=False)
+    tampon.seek(0)
+    curseur.copy_expert(requete_copy, tampon)
+
+    duree = round(time.time() - debut, 1)
+    print(" [PYTHON]", len(tableau), "lignes chargées :", libelle)
+    journaliser_etape("chargement_meteo.py", libelle, "Python", duree)
+
 
 # Lecture de la réponse météo JSON déjà téléchargée et affiche quelques informations
 # pour vérifier sa structure avant de la transformer.
@@ -93,7 +142,6 @@ for fichier, libelle in etapes_avant:
     print(" [SQL]", libelle)
     duree = round(time.time() - debut, 1)
     journal.append([fichier, libelle, "SQL", duree])
-    enregistrer_journal()
 
     # Après le nettoyage, vérification du volume de la table des sinistres propres.
     if fichier == "02_clean.sql":
@@ -108,20 +156,17 @@ for fichier, libelle in etapes_avant:
 
 # Chargement en bloc des données météo en mémoire dans PostgreSQL.
 # Cette étape doit suivre la création des tables et précéder le rattachement.
-debut = time.time()
-tampon = io.StringIO()
-meteo.to_csv(tampon, index=False, header=False)
-tampon.seek(0)
-curseur.copy_expert(
-    """
-    COPY meteo_assurrisk (
-        time, weather_code, temperature_2m_max, temperature_2m_min,
-        precipitation_sum, wind_gusts_10m_max, latitude, longitude
-    ) FROM STDIN WITH (FORMAT csv)
-    """,
-    tampon
+requete_meteo = """
+COPY meteo_assurrisk (
+    time, weather_code, temperature_2m_max, temperature_2m_min,
+    precipitation_sum, wind_gusts_10m_max, latitude, longitude
+) FROM STDIN WITH (FORMAT csv)
+"""
+charger_table(
+    meteo,
+    requete_meteo,
+    "Charger les données météo"
 )
-print(" [PYTHON]", len(meteo), "lignes de météo chargées")
 
 # Lecture du fichier  CSV de coordonnées, le convertir en flux CSV en mémoire,
 # puis chargement des lignes dans la table PostgreSQL correspondante.
@@ -144,7 +189,6 @@ print(" [PYTHON]", len(villes), "lignes de coordonnées chargées")
 # Ajouter le chargement Python au journal avec sa durée.
 journal.append(["chargement_meteo.py", "Charger les données météo et villes", "Python",
                 round(time.time() - debut, 1)])
-enregistrer_journal()
 
 # Vérification et enregistrement du nombre de lignes réellement présentes dans chaque
 # table après le chargement.
@@ -182,7 +226,6 @@ for fichier, libelle in etapes_apres:
     curseur.execute(requete)
     duree = round(time.time() - debut, 1)
     journal.append([fichier, libelle, "SQL", duree])
-    enregistrer_journal()
     print(" [SQL]", libelle, "-", duree, "s")
 
     # Contrôle le volume météo rattaché et le nombre de villes correspondantes.
@@ -234,7 +277,7 @@ for fichier, libelle in etapes_apres:
             controles.append([fichier, nom, valeur])
 
 # Rédiger le journal des durées et l'ensemble des contrôles dans le dossier sorties.
-suivi = pd.DataFrame(journal, columns=["fichier", "etape", "outil", "secondes"])
+suivi = pd.DataFrame(journal, columns=["fichier", "etape", "outil", "secondes", "statut"])
 suivi.to_csv("sorties/journal_pipeline.csv", sep=";", decimal=",", index=False, encoding="utf-8-sig")
 pd.DataFrame(controles, columns=colonnes_controles).to_csv(
     "sorties/controles.csv",
