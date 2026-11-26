@@ -269,3 +269,12 @@ chargement_meteo.py;Charger les données météo et villes;Python;0,3
 06_controles.sql;Contrôler le résultat;SQL;0,1
 
 La ligne de comparaison peut être : « Les deux lancements ont les mêmes étapes et les mêmes résultats de contrôle; les durées peuvent varier. » Les contrôles actuellement enregistrés sont 12 098 sinistres propres et finaux, 21 930 lignes météo, 30 villes rattachées, 0 sinistre sans météo et 0 doublon météo. Pour affirmer que ces résultats sont identiques sur les deux lancements, il faudra comparer aussi le second fichier controles.csv.
+
+
+# Le dépôt Git du projet — historique lisible, .gitignore correct, aucun secret, LISEZMOI.md qui explique quoi lancer et dans quel ordre.
+
+prés la fusion
+c1cf092 Mise à jour des fichiers d'enquete et du journal une nouvelle fois
+8cc3879 Mise à jour des fichiers d'enquete et du journal
+4c02dc1 Verifications du cahier et de ses tableaux
+4aa61e7 Mise à jour du cahier ou journal
